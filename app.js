@@ -282,7 +282,7 @@ app.get('/c3visualization', ensureAuthenticatedInstagram, function (req, res){
 });
 
 app.get('/c3followsvisualization', ensureAuthenticatedInstagram, function(req, res){
-  res.render('c3followsvisualization');
+  res.render('c3followsvisualization', {user: req.user});
 });
 
 app.get('/auth/instagram',
