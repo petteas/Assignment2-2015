@@ -278,7 +278,7 @@ app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
 
 
 app.get('/c3visualization', ensureAuthenticatedInstagram, function (req, res){
-  res.render('c3visualization');
+  res.render('c3visualization', {user: req.user});
 });
 
 app.get('/c3followsvisualization', ensureAuthenticatedInstagram, function(req, res){
