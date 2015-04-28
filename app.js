@@ -274,7 +274,12 @@ app.get('/igFollowsComp', ensureAuthenticatedInstagram, function(req, res){
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
   console.log(res);
   res.render('visualization', {user: req.user});
-}); 
+});
+
+app.get('/d3visualization', ensureAuthenticatedInstagram, function (req, res){
+  console.log(res);
+  res.render('d3visualization', {user: req.user});
+});
 
 
 app.get('/c3visualization', ensureAuthenticatedInstagram, function (req, res){
