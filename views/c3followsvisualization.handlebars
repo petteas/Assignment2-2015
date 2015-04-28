@@ -1,8 +1,37 @@
-<h1> Media Count of Your Instagram Followers using C3JS </h1>
-<div id="chart"></div>
+<body style="background-color: #242424">
 
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header" style="margin-right: 2%">
+            <a><img height="50" src="{{user.ig_prof_pic}}" class="img-circle" ></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav" >
+                <li><p class="nav navbar-left" style="color: #f9f9f9; padding-top: 20%">{{user.username}}</p></li>
+                <li role="presentation" ><a href="/account" >Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-<button class="btn btn-default" onclick="loadPrev()">Previous</button>
-<button class="btn btn-default" onclick="loadNext()">Next</button>
+<h1 class="text-center" style="font-size: 200%; color: #f9f9f9"> Comparison of follows between you and your followers</h1>
+
+<div class="container" >
+
+    <div class="jumbotron text-center">
+
+        <div id="chart"></div>
+
+        <button class="btn btn-default" onclick="loadPrev()">Previous</button>
+        <button class="btn btn-default" onclick="loadNext()">Next</button>
+    </div>
+
+</div>
 
 <script src="js/c3igfollowersvis.js"></script>
+
+</body>
