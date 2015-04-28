@@ -223,6 +223,54 @@ app.get('/igMediaCounts', ensureAuthenticatedInstagram, function(req, res){
   });
 });
 
+app.get('/igFollowsComp', ensureAuthenticatedInstagram, function(req, res){
+  var query = models.User.where({ig_id: req.user.ig_id});
+  query.findOne(function(err, user){
+    if(err) return err;
+    if(user){
+      Instagram.users.follows({
+        user_id: user.ig_id,
+        acces_token: user.ig_access_token,
+        complete: function(data){
+          var asyncTasks = [];
+          var followers_info = [];
+          var self_user;
+
+
+          asyncTasks.push(function(callback){
+            Instagram.users.info({
+              user_id: user.ig_id,
+              access_token: user.ig_access_token,
+              complete: function(data){
+                self_user = data;
+                callback();
+              }
+            });
+          });
+
+          data.forEach(function(item){
+            asyncTasks.push(function(callback){
+              Instagram.users.info({
+                user_id: item.id,
+                access_token: user.ig_access_token,
+                complete: function(data){
+                  followers_info.push(data);
+                  callback();
+                }
+              });
+            });
+          });
+
+          async.parallel(asyncTasks, function(err){
+            if(err) return err;
+            return res.json({user: self_user, followers: followers_info});
+          });
+        }
+      });
+    }
+  });
+});
+
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
   console.log(res);
   res.render('visualization', {user: req.user});
@@ -231,7 +279,11 @@ app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
 
 app.get('/c3visualization', ensureAuthenticatedInstagram, function (req, res){
   res.render('c3visualization');
-}); 
+});
+
+app.get('/c3followsvisualization', ensureAuthenticatedInstagram, function(req, res){
+  res.render('c3followsvisualization');
+});
 
 app.get('/auth/instagram',
   passport.authenticate('instagram'),
