@@ -1,7 +1,7 @@
 var margin = {top: 20, right: 20, bottom: 100, left: 40};
 var width = 960 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
-
+console.log("hei");
 //define scale of x to be from 0 to width of SVG, with .1 padding in between
 var scaleX = d3.scale.ordinal()
   .rangeRoundBands([0, width], .1);
@@ -19,12 +19,25 @@ var yAxis = d3.svg.axis()
   .scale(scaleY)
   .orient("left");
 
+function drawProfileinfo(d) {
+  d3.select("body").select("#usernm")
+      .text("Username: "+d.username);
+  d3.select("body").select("#bio")
+      .text("Bio: "+ d.bio);
+  d3.select("body").select("#profpic")
+      .attr("src", d.profile_picture);
+}
 //create svg
 var svg = d3.select("body").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
+    .style("background","white")
+    .style("margin-left","auto")
+    .style("margin-right","auto")
+    .style("display","block")
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 //get json object which contains media counts
 d3.json('/igMediaCounts', function(error, data) {
@@ -45,7 +58,7 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("transform", function(d) {
       return "rotate(-65)" 
     });
-
+console.log(data);
   //set up y axis
   svg.append("g")
     .attr("class", "y axis")
@@ -56,11 +69,11 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("dy", ".71em")
     .style("text-anchor", "end")
     .text("Number of Photos");
-
   //set up bars in bar graph
   svg.selectAll(".bar")
     .data(data.users)
     .enter().append("rect")
+      .on("mouseover", function(d,i) {drawProfileinfo(d)})
     .attr("class", "bar")
     .attr("x", function(d) { return scaleX(d.username); })
     .attr("width", scaleX.rangeBand())

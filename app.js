@@ -60,6 +60,7 @@ passport.use(new InstagramStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
+    console.log(profile._json.data.profile_picture);
    models.User.findOne({
     "ig_id": profile.id
    }, function(err, user) {
@@ -72,6 +73,7 @@ passport.use(new InstagramStrategy({
         newUser = new models.User({
           name: profile.username, 
           ig_id: profile.id,
+          ig_profilepic: profile._json.data.profile_picture,
           ig_access_token: accessToken
         });
 
@@ -92,6 +94,7 @@ passport.use(new InstagramStrategy({
           // represent the logged-in user.  In a typical application, you would want
           // to associate the Instagram account with a user record in your database,
           // and return that user instead.
+          console.log(user);
           return done(null, user);
         });
       }
@@ -175,7 +178,10 @@ app.get('/igphotos', ensureAuthenticatedInstagram, function(req, res){
     }
   });
 });
+app.get('/igUserInfo', ensureAuthenticatedInstagram, function(req, res){
+  var query  = models.User.where({ ig_id: req.user.ig_id });
 
+});
 app.get('/igMediaCounts', ensureAuthenticatedInstagram, function(req, res){
   var query  = models.User.where({ ig_id: req.user.ig_id });
   query.findOne(function (err, user) {
@@ -208,6 +214,7 @@ app.get('/igMediaCounts', ensureAuthenticatedInstagram, function(req, res){
           async.parallel(asyncTasks, function(err){
             // All tasks are done now
             if (err) return err;
+            mediaCounts.sort(function(a,b) {return a.counts.media - b.counts.media});
             return res.json({users: mediaCounts});        
           });
         }
@@ -217,7 +224,8 @@ app.get('/igMediaCounts', ensureAuthenticatedInstagram, function(req, res){
 });
 
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
-  res.render('visualization');
+  console.log(res);
+  res.render('visualization', {user: req.user});
 }); 
 
 
