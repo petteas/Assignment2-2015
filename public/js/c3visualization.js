@@ -15,5 +15,7 @@
           ]
         }
       });
+        d3.select("#loader")
+            .remove();
     });
 })();

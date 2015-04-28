@@ -51,7 +51,6 @@ var loadPrev;
             var getCurrent = function(){
               return followers[count];
             };
-
             loadNext = function(){
                 var current = getCurrent();
                 var next = getNext();
@@ -82,6 +81,8 @@ var loadPrev;
                 });
 
             };
+            d3.select("#loader")
+                .remove();
 
         });
 })();
