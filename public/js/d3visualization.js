@@ -31,10 +31,31 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 console.log(parseDate("1-May-12"));
-d3.json('/igMediaCounts', function(error, data) {
-var data = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),close:15},{date:parseDate("27-Apr-12"),close:5},{date:parseDate("26-Apr-12"),close:9},{date:parseDate("25-Apr-12"),close:19}];
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.close; })]);
+d3.json('/igUserFeed', function(error, data) {
+var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),close:15},{date:parseDate("27-Apr-12"),close:5},{date:parseDate("26-Apr-12"),close:9},{date:parseDate("25-Apr-12"),close:19}];
+    var dataArr = [];
+    var imageInfo = {};
+
+    $.each(data.data, function(index, item){
+        var dateString = dateFormat(new Date(parseInt(item.created_time) * 1000));
+        //var dateString = dateObj.getDate() + "-" + dateObj.getMonth() + "-" + dateObj.getFullYear();
+        console.log(dateString);
+        if(dateString in imageInfo){
+            imageInfo[dateString] += 1;
+        } else{
+            imageInfo[dateString] = 1;
+        }
+    });
+
+
+    $.each(imageInfo, function(key, value){
+        dataArr.push({date: parseDate(key), close: value});
+    });
+
+    console.log(dataArr);
+
+    x.domain(d3.extent(dataArr, function(d) { return d.date; }));
+  y.domain([0, d3.max(dataArr, function(d) { return d.close; })]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -52,10 +73,20 @@ var data = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),c
       .text("Number of posts on your feed");
 
   svg.append("path")
-      .datum(data)
+      .datum(dataArr)
       .attr("class", "line")
       .attr("d", line);
   d3.select("#loader")
       .remove();
   d3.selectAll("svg").style("background","white");
 });
+
+
+var dateFormat = function(date){
+    var monthArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des'];
+    var yyyy = date.getFullYear().toString().substring(2);
+    var mm = monthArr[date.getMonth()].toString(); // getMonth() is zero-based
+    var dd  = date.getDate().toString();
+
+    return dd + '-' + mm + '-' + yyyy;
+}

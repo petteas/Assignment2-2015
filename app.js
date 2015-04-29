@@ -12,6 +12,7 @@ var dotenv = require('dotenv');
 var mongoose = require('mongoose');
 var Instagram = require('instagram-node-lib');
 var async = require('async');
+var request = require('request');
 var app = express();
 
 //local dependencies
@@ -60,7 +61,7 @@ passport.use(new InstagramStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
-    console.log(profile._json.data.profile_picture);
+
    models.User.findOne({
     "ig_id": profile.id
    }, function(err, user) {
@@ -94,7 +95,7 @@ passport.use(new InstagramStrategy({
           // represent the logged-in user.  In a typical application, you would want
           // to associate the Instagram account with a user record in your database,
           // and return that user instead.
-          console.log(user);
+
           return done(null, user);
         });
       }
@@ -163,7 +164,6 @@ app.get('/igphotos', ensureAuthenticatedInstagram, function(req, res){
       Instagram.users.liked_by_self({
         access_token: user.ig_access_token,
         complete: function(data) {
-          console.log(data);
           //Map will iterate through the returned data obj
           var imageArr = data.map(function(item) {
             //create temporary json object
@@ -276,48 +276,55 @@ app.get('/igUserFeed', ensureAuthenticatedInstagram, function(req, res){
   query.findOne(function(err, user){
     if(err) return err;
     if(user){
-      var dateObj;
-      var dateString;
-      var asyncTasks = [];
       var imageInfo = [];
 
-      asyncTasks.push(function(callback){
-        Instagram.users.self({
-          access_token: user.ig_access_token,
-          complete: function(data) {
-            data.forEach(function(item){
-              imageInfo.push(item);
-            });
-            callback();
-          }
-        });
-      });
-      /*
-       dateObj = new Date(parseInt(item.created_time) * 1000);
-       //var dateString = dateObj.getDate() + "-" + dateObj.getMonth() + "-" + dateObj.getFullYear();
-       dateString = dateObj.toString();
-       console.log(dateString);
-       if(dateString in imageInfo){
-       imageInfo[dateString] += 1;
-       } else{
-       imageInfo[dateString] = 1;
-       }
-      */
-      async.parallel(asyncTasks, function(err){
-        if(err) return err;
-        return res.json({data: imageInfo});
+      Instagram.users.self({
+        access_token: user.ig_access_token,
+        complete: function(data, pagination) {
+          var count = 0;
+          chunk = {'pagination': pagination, 'data': data};
+
+          data.forEach(function(item){
+            imageInfo.push(item);
+          });
+
+          var url = chunk.pagination.next_url;
+
+          async.whilst(
+              function(){
+                return (count < 30);
+              },
+              function(callback){
+                request({
+                  url: url,
+                  json: true
+                },function(error, response, body){
+                  if(!error && response.statusCode === 200){
+                    var newchunk = {'pagination': body.pagination, 'data': body.data};
+                    newchunk.data.forEach(function (i) {
+                      imageInfo.push(i);
+                    });
+                    url = newchunk.pagination.next_url;
+                    count++;
+                    callback();
+                  }
+                });
+              }, function(err){
+                if(err) return err;
+                return res.json({data: imageInfo});
+              }
+          );
+        }
       });
     }
   });
 });
 
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
-  console.log(res);
   res.render('visualization', {user: req.user});
 });
 
 app.get('/d3visualization', ensureAuthenticatedInstagram, function (req, res){
-  console.log(res);
   res.render('d3visualization', {user: req.user});
 });
 
