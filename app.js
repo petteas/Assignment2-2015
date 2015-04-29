@@ -271,6 +271,46 @@ app.get('/igFollowsComp', ensureAuthenticatedInstagram, function(req, res){
   });
 });
 
+app.get('/igUserFeed', ensureAuthenticatedInstagram, function(req, res){
+  var query = models.User.where({ig_id: req.user.ig_id});
+  query.findOne(function(err, user){
+    if(err) return err;
+    if(user){
+      var dateObj;
+      var dateString;
+      var asyncTasks = [];
+      var imageInfo = [];
+
+      asyncTasks.push(function(callback){
+        Instagram.users.self({
+          access_token: user.ig_access_token,
+          complete: function(data) {
+            data.forEach(function(item){
+              imageInfo.push(item);
+            });
+            callback();
+          }
+        });
+      });
+      /*
+       dateObj = new Date(parseInt(item.created_time) * 1000);
+       //var dateString = dateObj.getDate() + "-" + dateObj.getMonth() + "-" + dateObj.getFullYear();
+       dateString = dateObj.toString();
+       console.log(dateString);
+       if(dateString in imageInfo){
+       imageInfo[dateString] += 1;
+       } else{
+       imageInfo[dateString] = 1;
+       }
+      */
+      async.parallel(asyncTasks, function(err){
+        if(err) return err;
+        return res.json({data: imageInfo});
+      });
+    }
+  });
+});
+
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
   console.log(res);
   res.render('visualization', {user: req.user});
