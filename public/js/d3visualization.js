@@ -30,12 +30,11 @@ var svg = d3.select("body").append("svg")
     .style("display","block")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+console.log(parseDate("1-May-12"));
 d3.json('/igMediaCounts', function(error, data) {
-
-var data = [{date:parseDate("1-May-12"),close:"582.13"},{date:parseDate("30-Apr-12"),close:"583.98"},{date:parseDate("27-Apr-12"),close:"603.00"},{date:parseDate("26-Apr-12"),close:"607.70"},{date:parseDate("25-Apr-12"),close:"610.00"}];
+var data = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),close:15},{date:parseDate("27-Apr-12"),close:5},{date:parseDate("26-Apr-12"),close:9},{date:parseDate("25-Apr-12"),close:19}];
   x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
+  y.domain([0, d3.max(data, function(d) { return d.close; })]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -47,8 +46,8 @@ var data = [{date:parseDate("1-May-12"),close:"582.13"},{date:parseDate("30-Apr-
       .call(yAxis)
       .append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
+      .attr("y", 1)
+      .attr("dy", ".05em")
       .style("text-anchor", "end")
       .text("Number of posts on your feed");
 
