@@ -19,10 +19,7 @@ var loadPrev;
                         [self_user.username, self_user.counts.follows],
                         [followers[0].username, followers[0].counts.follows]
                     ],
-                    type : 'donut',
-                    onclick: function (d, i) { console.log("onclick", d, i); },
-                    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-                    onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+                    type : 'donut'
                 },
 
                 donut: {
