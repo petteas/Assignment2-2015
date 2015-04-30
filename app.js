@@ -292,7 +292,7 @@ app.get('/igUserFeed', ensureAuthenticatedInstagram, function(req, res){
 
           async.whilst(
               function(){
-                return (count < 10);
+                return (count < 15);
               },
               function(callback){
                 request({
