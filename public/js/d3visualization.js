@@ -26,7 +26,6 @@ var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-        console.log(d);
         return "<strong>Count:</strong> <span style='color:red'>"+ d.close+"</span>";
     })
 
@@ -47,7 +46,6 @@ d3.json('/igUserFeed', function(error, data) {
     $.each(data.data, function(index, item){
         var dateString = dateFormat(new Date(parseInt(item.created_time) * 1000));
         //var dateString = dateObj.getDate() + "-" + dateObj.getMonth() + "-" + dateObj.getFullYear();
-        console.log(dateString);
         if(dateString in imageInfo){
             imageInfo[dateString] += 1;
         } else{
@@ -60,7 +58,6 @@ d3.json('/igUserFeed', function(error, data) {
         dataArr.push({date: parseDate(key), close: value});
     });
 
-    console.log(dataArr);
 
     x.domain(d3.extent(dataArr, function(d) { return d.date; }));
   y.domain([0, d3.max(dataArr, function(d) { return d.close; })]);

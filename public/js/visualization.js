@@ -63,7 +63,6 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("transform", function(d) {
       return "rotate(-65)" 
     });
-console.log(data);
   //set up y axis
   svg.append("g")
     .attr("class", "y axis")
