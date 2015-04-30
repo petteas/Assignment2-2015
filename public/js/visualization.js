@@ -96,7 +96,7 @@ d3.json('/igMediaCounts', function(error, data) {
     clearTimeout(sortTimeout);
 
     // Copy-on-write since tweens are evaluated after a delay.
-    var x0 = scaleX.domain(data.sort(this.checked
+    var x0 = scaleX.domain(data.users.sort(this.checked
         ? function(a, b) { return b.counts.media - a.counts.media; }
         : function(a, b) { return d3.ascending(a.username, b.username); })
         .map(function(d) { return d.username; }))
