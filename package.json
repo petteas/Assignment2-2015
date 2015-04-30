@@ -19,7 +19,8 @@
     "mongoose-findorcreate": "^0.1.2",
     "passport": "0.2.1",
     "passport-instagram": "0.1.2",
-    "request": "2.55.*"
+    "request": "2.55.*",
+    "d3-tip": "0.6.7"
   },
   "engines": {
     "node": "0.10.x"
