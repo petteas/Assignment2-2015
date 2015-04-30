@@ -71,8 +71,8 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
     .attr("dy", ".71em")
-    .style("text-anchor", "end")
-    .text("Number of Photos");
+    .style("text-anchor", "end");
+
   //set up bars in bar graph
   svg.selectAll(".bar")
     .data(data.users)
@@ -115,7 +115,14 @@ d3.json('/igMediaCounts', function(error, data) {
     transition.select(".x.axis")
         .call(xAxis)
         .selectAll("g")
-        .delay(delay);
+        .delay(delay)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", function(d) {
+            return "rotate(-65)"
+        });
   }
 
   d3.select("#loader")
