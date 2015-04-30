@@ -32,7 +32,7 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 console.log(parseDate("1-May-12"));
 d3.json('/igUserFeed', function(error, data) {
-var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),close:15},{date:parseDate("27-Apr-12"),close:5},{date:parseDate("26-Apr-12"),close:9},{date:parseDate("25-Apr-12"),close:19}];
+
     var dataArr = [];
     var imageInfo = {};
 
@@ -57,6 +57,7 @@ var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),
     x.domain(d3.extent(dataArr, function(d) { return d.date; }));
   y.domain([0, d3.max(dataArr, function(d) { return d.close; })]);
 
+
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -72,13 +73,24 @@ var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),
       .style("text-anchor", "end")
       .text("Number of posts on your feed");
 
-  svg.append("path")
+    svg.selectAll(".dot")
+        .data(dataArr)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 7)
+        .attr("cx", function(d) { return x(d.date); })
+        .attr("cy", function(d) { return y(d.close); })
+        .style("fill", function(){return "#4F94CD"});
+
+    svg.append("path")
       .datum(dataArr)
       .attr("class", "line")
       .attr("d", line);
   d3.select("#loader")
       .remove();
   d3.selectAll("svg").style("background","white");
+
+
 });
 
 
