@@ -47,12 +47,11 @@ d3.json('/igUserFeed', function(error, data) {
         }
     });
 
-
     $.each(imageInfo, function(key, value){
         dataArr.push({date: parseDate(key), close: value});
     });
-
-    console.log(dataArr);
+    
+    dataArr.pop();
 
     x.domain(d3.extent(dataArr, function(d) { return d.date; }));
   y.domain([0, d3.max(dataArr, function(d) { return d.close; })]);
