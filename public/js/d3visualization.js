@@ -26,7 +26,8 @@ var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-        return "<strong>Count:</strong> <span style='color:red'>"+"</span>";
+        console.log(d);
+        return "<strong>Count:</strong> <span style='color:red'>"+ d.close+"</span>";
     })
 
 var svg = d3.select("body").append("svg")
@@ -39,7 +40,7 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 svg.call(tip);
 d3.json('/igUserFeed', function(error, data) {
-var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),close:15},{date:parseDate("27-Apr-12"),close:5},{date:parseDate("26-Apr-12"),close:9},{date:parseDate("25-Apr-12"),close:19}];
+
     var dataArr = [];
     var imageInfo = {};
 
@@ -64,6 +65,7 @@ var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),
     x.domain(d3.extent(dataArr, function(d) { return d.date; }));
   y.domain([0, d3.max(dataArr, function(d) { return d.close; })]);
 
+
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -78,24 +80,33 @@ var data1 = [{date:parseDate("1-May-12"),close:12},{date:parseDate("30-Apr-12"),
       .attr("dy", ".25em")
       .style("text-anchor", "end");
 
-  svg.append("path")
-      .attr("id","line1")
+    svg.selectAll(".dot")
+        .data(dataArr)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 7)
+        .on('mouseover',tip.show)
+        .on('mouseout', tip.hide)
+        .attr("cx", function(d) { return x(d.date); })
+        .attr("cy", function(d) { return y(d.close); })
+        .style("fill", function(){return "#4F94CD"});
+
+    svg.append("path")
       .datum(dataArr)
+        .attr("id","line1")
       .attr("class", "line")
       .attr("d", line)
-      .on("click", function(d,i) {drawInfo(d)})
-      .on('mouseover',tip.show)
-      .on('mouseout', tip.hide)
-      //.on("mouseover", function(d,i) {setStrokeWidth7Px()})
-      //.on("mouseout", function(d,i) {setStrokeWidth3Px()})
         .style("stroke-width","3px");
+
   d3.select("#loader")
       .remove();
   d3.selectAll("svg").style("background","white");
     d3.select("#dataInfo")
         .style("display", "inherit");
+    drawInfo(dataArr);
 
 });
+
 function setStrokeWidth7Px(){
     d3.select("#line1").style("stroke-width","7px");
 }
@@ -117,16 +128,12 @@ function drawInfo(d) {
             min=value.close;
         }
     });
-    console.log(max);
-    console.log(min);
-    console.log(count);
-    console.log(total);
     d3.select("body").select("#min")
         .text("Minimum Value: "+min);
     d3.select("body").select("#max")
         .text("Maximum Value: "+ max);
     d3.select("body").select("#avg")
-        .text("Average Value: "+ (total/count));
+        .text("Average Value: "+ Math.round(total/count));
 }
 
 var dateFormat = function(date){
