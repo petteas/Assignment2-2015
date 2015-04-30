@@ -84,8 +84,8 @@ d3.json('/igUserFeed', function(error, data) {
         .enter().append("circle")
         .attr("class", "dot")
         .attr("r", 7)
-        .on('mouseover',tip.show)
-        .on('mouseout', tip.hide)
+        .on('mouseover',function(d) { tip.show(d);d3.select(this).attr("r", 13)})
+        .on('mouseout', function(d) { tip.hide(d);d3.select(this).attr("r", 7)})
         .attr("cx", function(d) { return x(d.date); })
         .attr("cy", function(d) { return y(d.close); })
         .style("fill", function(){return "#4F94CD"});
