@@ -85,6 +85,39 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("width", scaleX.rangeBand())
     .attr("y", function(d) { return scaleY(d.counts.media); })
     .attr("height", function(d) { return height - scaleY(d.counts.media); });
+
+  d3.select("input").on("change", change);
+
+  var sortTimeout = setTimeout(function() {
+    d3.select("input").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+    clearTimeout(sortTimeout);
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var x0 = x.domain(data.sort(this.checked
+        ? function(a, b) { return b.counts.media - a.counts.media; }
+        : function(a, b) { return d3.ascending(a.username, b.username); })
+        .map(function(d) { return d.username; }))
+        .copy();
+
+    svg.selectAll(".bar")
+        .sort(function(a, b) { return x0(a.counts.media) - x0(b.counts.media); });
+
+    var transition = svg.transition().duration(750),
+        delay = function(d, i) { return i * 50; };
+
+    transition.selectAll(".bar")
+        .delay(delay)
+        .attr("x", function(d) { return x0(d.username); });
+
+    transition.select(".x.axis")
+        .call(xAxis)
+        .selectAll("g")
+        .delay(delay);
+  }
+
   d3.select("#loader")
       .remove();
   d3.select("#userInfo")
